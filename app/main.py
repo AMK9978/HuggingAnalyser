@@ -17,7 +17,7 @@ logger.addHandler(console_handler)
 BASE_URL = 'https://huggingface.co'
 
 
-def is_dir(title):
+def is_dir(title: str) -> bool:
     if "kB" in title or "Bytes" in title or "MB" in title or "GB" in title:
         return False
     return True
@@ -32,7 +32,7 @@ def update_csv(csv_file, row):
         outfile.flush()
 
 
-def convert_size(size_text):
+def convert_size(size_text: str) -> int:
     if "kB" in size_text:
         return int(float(size_text.split(" kB")[0]) * 1024)
     if "MB" in size_text:
@@ -44,7 +44,7 @@ def convert_size(size_text):
     return 0
 
 
-def soup_crawl(url):
+def soup_crawl(url: str) -> int:
     size = 0
     try:
         content = requests.get(f"{BASE_URL}{url}")
@@ -70,9 +70,9 @@ def soup_crawl(url):
     return size
 
 
-def crawl_spaces(task):
-    input_file_path = f'models-{task}.csv'
-    output_file_path = f'{task}.csv'
+def crawl_spaces(category: str):
+    input_file_path = f'models-{category}.csv'
+    output_file_path = f'{category}.csv'
     current_spaces = set()
 
     with open(output_file_path, mode='r') as infile:
@@ -95,70 +95,15 @@ def crawl_spaces(task):
                 logger.info(space.id)
                 size = soup_crawl(f"/spaces/{space.id}/tree/main")
                 logger.info(f"Space: {space.id}, size: {size}")
-                update_csv(csv_file=output_file_path, row=[task, model_id, space.id,
+                update_csv(csv_file=output_file_path, row=[category, model_id, space.id,
                                                            round(float(size) / 1024.0, ndigits=1)])
 
 
-def crawl_models(category):
-    inp = f'models-{category}.csv'
-    inp2 = f'{category}.csv'
-    out2 = f'new-{category}.csv'
-    out3 = f'identical-{category}.csv'
-    all_data = []
-    identical_spaces = set()
-    data = []
-    with open(inp2, mode='r') as infile:
-        reader = csv.reader(infile)
-        next(reader)
-        for row in reader:
-            all_data.append({"category": row[0], "model": row[1], "space": row[2], "size": row[3]})
-
-
-    with open(inp, mode='r') as infile:
-        reader = csv.reader(infile)
-        next(reader)
-        for row in reader:
-            model = row[1]
-            data.append(model)
-    spaces = set()
-    old_models = []
-
-    for model in data:
-        new_spaces = list(hf_api.list_spaces(models=model))
-        for sp in new_spaces:
-            spaces.add(f"{model}|{sp.id}")
-    with open(inp2, mode='r') as infile:
-        reader = csv.reader(infile)
-        next(reader)
-        for row in reader:
-            old_models.append(row[1])
-
-    difference_models = list(set(old_models) - set(data))
-
-    with open(out2, mode='w') as outfile:
-        with open(out3, mode='w') as iden_out:
-            writer = csv.writer(outfile)
-            iden_writer = csv.writer(iden_out)
-            if outfile.tell() == 0:
-                writer.writerow(['category', 'model', 'space", "size'])
-            if iden_out.tell() == 0:
-                iden_writer.writerow(['category', 'model', 'space", "size'])
-            for elem in all_data:
-                if elem["model"] in difference_models:
-                    continue
-                writer.writerow([elem["category"], elem["model"], elem["space"], elem["size"]])
-                if f"{elem['model']}|{elem['space']}" not in identical_spaces:
-                    iden_writer.writerow([elem["category"], elem["model"], elem["space"], elem["size"]])
-                identical_spaces.add(f"{elem['model']}|{elem['space']}")
-            iden_out.flush()
-        outfile.flush()
-
-
-def model_apps_finder(category, number):
+def crawl_models(category: str, sort="downloads", number=20):
     models_file = f'models-{category}-{number}.csv'
     model_dict = {}
     top_models = requests.get(f"{BASE_URL}/api/models",
-                              params={"pipeline_tag": category, "sort": "downloads",
+                              params={"pipeline_tag": category, "sort": sort,
                                       "direction": -1,
                                       "limit": number})
     prettified_models = json.loads(top_models.text)
@@ -179,6 +124,7 @@ def model_apps_finder(category, number):
 
 if __name__ == '__main__':
     logger.info("Starting the app...")
-    crawl_spaces(task="text-generation")
-    crawl_spaces(task="text-classification")
-
+    crawl_models(category="text-generation")
+    crawl_models(category="text-classification")
+    crawl_spaces(category="text-generation")
+    crawl_spaces(category="text-classification")

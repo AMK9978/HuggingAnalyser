@@ -3,7 +3,7 @@ import random
 import pandas as pd
 import matplotlib.pyplot as plt
 
-from main import logger
+from app.main import logger
 
 
 def draw(category):
