@@ -7,7 +7,11 @@ from main import logger
 
 
 def draw(category):
-    file_path = f"identical-{category}.csv"
+    """
+    Draws a logarithmic bar chart for the given category
+    :param category: Pipeline tag to gets the related file
+    """
+    file_path = f"datasets/identical-{category}.csv"
 
     df = pd.read_csv(file_path)
 
@@ -27,7 +31,11 @@ def draw(category):
 
 
 def draw_without_outliers(category):
-    file_path = f"identical-{category}.csv"
+    """
+    Draws a logarithmic bar chart for the given category after eliminating outliers using IQR method
+    :param category: Pipeline tag to gets the related file
+    """
+    file_path = f"datasets/identical-{category}.csv"
 
     df = pd.read_csv(file_path)
 
@@ -58,7 +66,12 @@ def draw_without_outliers(category):
 
 
 def stat(category):
-    file_path = f"identical-{category}.csv"
+    """
+    Returns mean and std of the given category
+    :param category: Pipeline tag to gets the related file
+    :return: mean and std
+    """
+    file_path = f"datasets/identical-{category}.csv"
     df = pd.read_csv(file_path)
     df["size"] = pd.to_numeric(df["size"], errors="coerce")
 
@@ -69,7 +82,12 @@ def stat(category):
 
 
 def stat_without_outliers(category):
-    file_path = f"identical-{category}.csv"
+    """
+    Returns mean and std of the given category after eliminating outliers using IQR method
+    :param category: Pipeline tag to gets the related file
+    :return: mean and std
+    """
+    file_path = f"datasets/identical-{category}.csv"
     df = pd.read_csv(file_path)
 
     df["size"] = pd.to_numeric(df["size"], errors="coerce")
@@ -90,7 +108,12 @@ def stat_without_outliers(category):
 
 
 def stat_without_outliers_std(category):
-    file_path = f"identical-{category}.csv"
+    """
+    Returns mean and std of the given category after eliminating outliers using Standard Deviation method
+    :param category: Pipeline tag to gets the related file
+    :return: mean and std
+    """
+    file_path = f"datasets/identical-{category}.csv"
     df = pd.read_csv(file_path)
 
     df["size"] = pd.to_numeric(df["size"], errors="coerce")
@@ -111,10 +134,15 @@ def stat_without_outliers_std(category):
 
 
 def draw_categories(categories: list, numbers: list):
+    """
+    Draws the line charts of the given categories for their number of unique applications based on their top models
+    :param categories: Pipeline tag to gets the related file
+    :param numbers: The number of top models to gets the related file
+    """
     for category in categories:
         number_dict = {}
         for number in numbers:
-            file_path = f"models-{category}-{number}.csv"
+            file_path = f"datasets/models-{category}-{number}.csv"
             df = pd.read_csv(file_path)
             df["number_of_apps"] = pd.to_numeric(df["number_of_apps"], errors="coerce")
             number_dict[number] = df["number_of_apps"].sum()

@@ -4,9 +4,11 @@ Writer: Amir Mohammad Karimi
 
 Date: Jan 19, 2024
 
-## Results
+## Analysis and Results
 
-The analysis between Text Generation and Text Classification application development and maintenance.
+The analysis is between Text Generation and Text Classification application development and maintenance efforts. The
+main test subjects are the top 20 popular models, which are considered to be the top most-downloaded ones, as it
+indicates the attention to a model.
 
 Based on the result of the comparison made by the crawler, the results are:
 
@@ -14,7 +16,7 @@ Based on the result of the comparison made by the crawler, the results are:
 to 719, respectively - among the top 20 most-downloaded models. Refer to Figure 1 for the relationship between
    number of top models and the number of applications.
 
-![Categories Image](categories.png)
+![Categories Image](media/categories.png)
 *Figure 1: Number of top models to unique apps*
 
 | Number of top models | Number of unique text classification apps | Number of unique text generation apps |
@@ -42,16 +44,16 @@ dealing with many extreme outliers. `Standard Deviation` is also implemented in 
 | Text Classification | 121570.5 | 572258.1           | 667.1                 | 1453.6                              |
 *Table 2: Mean and Standard deviation of apps' size before and after preprocess for the two categories in KB*
 
-![text-classification_bar_chart.png](text-classification_bar_chart.png)
+![text-classification_bar_chart.png](media/text-classification_bar_chart.png)
 *Figure 2: Bar chart of text classification apps' size*
 
-![text-classification_without_outlier_bar_chart.png](text-classification_without_outlier_bar_chart.png)
+![text-classification_without_outlier_bar_chart.png](media/text-classification_without_outlier_bar_chart.png)
 *Figure 3: Bar chart of text classification apps' size after preprocess*
 
-![text-generation_bar_chart.png](text-generation_bar_chart.png)
+![text-generation_bar_chart.png](media/text-generation_bar_chart.png)
 *Figure 4: Bar chart of text generation apps' size*
 
-![text-generation_without_outlier_bar_chart.png](text-generation_without_outlier_bar_chart.png)
+![text-generation_without_outlier_bar_chart.png](media/text-generation_without_outlier_bar_chart.png)
 *Figure 5: Bar chart of text generation apps' size after preprocess*
 
 
