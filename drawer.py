@@ -158,8 +158,8 @@ def draw_categories(categories: list, numbers: list):
     plt.xlabel("Number of Top Models")
     plt.ylabel("Number of Apps")
     plt.title(f"Line Chart of categories")
-    plt.savefig("categories.png")
     plt.legend()
+    plt.savefig("categories.png")
     plt.show()
 
 
