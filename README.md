@@ -3,11 +3,17 @@
 HuggingFace text generation and text classification models and related spaces analyser written in Python.
 
 ## Get started
-
+Local:
 ```
 git clone git@github.com:AMK9978/HuggingAnalyser.git
 pip install -r requirements.txt
 python main.py
+```
+Docker:
+```
+git clone git@github.com:AMK9978/HuggingAnalyser.git
+docker build hugging .
+docker run --name hugging -itd hugging
 ```
 
 ## Comparison and Results
