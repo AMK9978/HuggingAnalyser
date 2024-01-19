@@ -1,6 +1,7 @@
 import csv
 import json
 import logging
+import os
 
 import requests
 from bs4 import BeautifulSoup
@@ -10,11 +11,13 @@ logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
 console_handler = logging.StreamHandler()
 console_handler.setLevel(logging.DEBUG)
-formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s', datefmt='%Y-%m-%d %H:%M:%S')
+formatter = logging.Formatter(
+    "%(asctime)s - %(levelname)s - %(message)s", datefmt="%Y-%m-%d %H:%M:%S"
+)
 console_handler.setFormatter(formatter)
 logger.addHandler(console_handler)
 
-BASE_URL = 'https://huggingface.co'
+BASE_URL = "https://huggingface.co"
 
 
 def is_dir(title: str) -> bool:
@@ -24,10 +27,10 @@ def is_dir(title: str) -> bool:
 
 
 def update_csv(csv_file, row):
-    with open(csv_file, mode='a', newline='') as outfile:
+    with open(csv_file, mode="a", newline="") as outfile:
         writer = csv.writer(outfile)
         if outfile.tell() == 0:
-            writer.writerow(['category', 'model', 'space', 'size'])
+            writer.writerow(["category", "model", "space", "size"])
         writer.writerow(row)
         outfile.flush()
 
@@ -70,18 +73,19 @@ def soup_crawl(url: str) -> int:
     return size
 
 
-def crawl_spaces(category: str):
-    input_file_path = f'models-{category}.csv'
-    output_file_path = f'{category}.csv'
+def crawl_spaces(category: str, number=20):
+    input_file_path = f"models-{category}-{number}.csv"
+    result_file_path = f"{category}.csv"
     current_spaces = set()
 
-    with open(output_file_path, mode='r') as infile:
-        reader = csv.reader(infile)
-        next(reader)
-        for row in reader:
-            space = row[2]
-            current_spaces.add(space)
-    with open(input_file_path, mode='r') as infile:
+    if os.path.exists(result_file_path):
+        with open(result_file_path, mode="r") as infile:
+            reader = csv.reader(infile)
+            next(reader)
+            for row in reader:
+                space = row[2]
+                current_spaces.add(space)
+    with open(input_file_path, mode="r") as infile:
         reader = csv.reader(infile)
         next(reader)
         for row in reader:
@@ -95,26 +99,38 @@ def crawl_spaces(category: str):
                 logger.info(space.id)
                 size = soup_crawl(f"/spaces/{space.id}/tree/main")
                 logger.info(f"Space: {space.id}, size: {size}")
-                update_csv(csv_file=output_file_path, row=[category, model_id, space.id,
-                                                           round(float(size) / 1024.0, ndigits=1)])
+                update_csv(
+                    csv_file=result_file_path,
+                    row=[
+                        category,
+                        model_id,
+                        space.id,
+                        round(float(size) / 1024.0, ndigits=1),
+                    ],
+                )
 
 
 def crawl_models(category: str, sort="downloads", number=20):
-    models_file = f'models-{category}-{number}.csv'
+    models_file = f"models-{category}-{number}.csv"
     model_dict = {}
-    top_models = requests.get(f"{BASE_URL}/api/models",
-                              params={"pipeline_tag": category, "sort": sort,
-                                      "direction": -1,
-                                      "limit": number})
+    top_models = requests.get(
+        f"{BASE_URL}/api/models",
+        params={
+            "pipeline_tag": category,
+            "sort": sort,
+            "direction": -1,
+            "limit": number,
+        },
+    )
     prettified_models = json.loads(top_models.text)
     for model in prettified_models:
         spaces = list(hf_api.list_spaces(models=model["id"]))
         model_dict[model["id"]] = len(spaces)
     cnt = 0
-    with open(models_file, mode='w') as outfile:
+    with open(models_file, mode="w") as outfile:
         writer = csv.writer(outfile)
         if outfile.tell() == 0:
-            writer.writerow(['category', 'model', 'number_of_apps'])
+            writer.writerow(["category", "model", "number_of_apps"])
         for k, v in model_dict.items():
             writer.writerow([category, k, v])
             cnt += v
@@ -122,9 +138,6 @@ def crawl_models(category: str, sort="downloads", number=20):
     logger.info(f"Category: {category}, Sum: {cnt}")
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     logger.info("Starting the app...")
-    crawl_models(category="text-generation")
-    crawl_models(category="text-classification")
-    crawl_spaces(category="text-generation")
     crawl_spaces(category="text-classification")

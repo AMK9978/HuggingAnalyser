@@ -20,7 +20,18 @@ python main.py
 
 ## Built With
 - Python 3.11
+- requests
+- BeautifulSoup4
+- pandas
+- matplotlib
+- Black
+- isort
+
 
 ## License
 This project is licensed under the MIT License.
 
+## Discussion on HuggingFace
+There is an open thread on HuggingFace opened by Amir Karimi requesting the app size feature from HuggingFace Hub API:
+
+[Thread](https://discuss.huggingface.co/t/space-app-size-calculation/69588)
